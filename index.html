@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OfficeTrack</title>
+<meta name="theme-color" content="#4F46E5">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+/* palette sampled from "A Dictionary of Color Combinations" */
+--of:var(--c1);--wf:color-mix(in srgb,var(--c3) 70%,var(--c1));--lv:var(--c2);--ho:color-mix(in srgb,var(--c1) 45%,var(--c2));--un:color-mix(in srgb,var(--c2) 62%,#9C3729);
+--c1:#143152;--c2:#D57E0B;--c3:#CCC8B0;
+--bg:color-mix(in srgb,var(--c3) 48%,#fff);--card:color-mix(in srgb,var(--c3) 16%,#fff);--tx:color-mix(in srgb,var(--c1) 80%,#000);--mu:color-mix(in srgb,var(--tx) 62%,var(--bg));--bd:color-mix(in srgb,var(--c1) 20%,var(--card));--cell:color-mix(in srgb,var(--c1) 9%,var(--card));
+--pri:var(--c1);--grad:linear-gradient(135deg,var(--c1),color-mix(in srgb,var(--c1) 65%,var(--c2)));--sh:0 4px 20px rgba(0,0,0,.07);
+--ofb:color-mix(in srgb,var(--of) 30%,var(--card));--wfb:color-mix(in srgb,var(--wf) 28%,var(--card));--lvb:color-mix(in srgb,var(--lv) 28%,var(--card));--hob:color-mix(in srgb,var(--ho) 26%,var(--card));--unb:color-mix(in srgb,var(--un) 10%,var(--card))}
+:root[data-p="teal"]{--c1:#03696F;--c2:#C53A14;--c3:#A1BAB6}
+:root[data-p="cerulean"]{--c1:#1B7599;--c2:#D5940C;--c3:#92AEC0}
+:root[data-p="plum"]{--c1:#372365;--c2:#B7951D;--c3:#87AE9B}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:color-mix(in srgb,var(--c1) 28%,#000);--card:color-mix(in srgb,var(--c1) 42%,#000);--tx:color-mix(in srgb,var(--c3) 25%,#fff);--mu:color-mix(in srgb,var(--tx) 65%,var(--card));--bd:color-mix(in srgb,var(--c3) 22%,var(--card));--pri:color-mix(in srgb,var(--c2) 75%,#fff);--sh:none;--of:color-mix(in srgb,var(--c1) 40%,#fff);--wf:color-mix(in srgb,var(--c3) 90%,#fff);--ho:color-mix(in srgb,var(--c1) 30%,var(--c3));--un:color-mix(in srgb,var(--c2) 80%,#fff)}}
+:root[data-theme="dark"]{--bg:color-mix(in srgb,var(--c1) 28%,#000);--card:color-mix(in srgb,var(--c1) 42%,#000);--tx:color-mix(in srgb,var(--c3) 25%,#fff);--mu:color-mix(in srgb,var(--tx) 65%,var(--card));--bd:color-mix(in srgb,var(--c3) 22%,var(--card));--pri:color-mix(in srgb,var(--c2) 75%,#fff);--sh:none;--of:color-mix(in srgb,var(--c1) 40%,#fff);--wf:color-mix(in srgb,var(--c3) 90%,#fff);--ho:color-mix(in srgb,var(--c1) 30%,var(--c3));--un:color-mix(in srgb,var(--c2) 80%,#fff)}
+input[type=color]{width:100%;height:44px;border:1.5px solid var(--bd);border-radius:12px;background:var(--bg);padding:3px;cursor:pointer}.cl{display:flex;gap:8px}.cl div{flex:1}.cl small{display:block;text-align:center;font-size:.7rem;color:var(--mu);margin-top:4px;font-weight:700}.pal{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pal button{border:1.5px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:14px;padding:10px;font-weight:700;font-size:.78rem;cursor:pointer;display:flex;flex-direction:column;gap:7px;align-items:flex-start}
+.pal .sw{display:flex;width:100%;height:22px;border-radius:8px;overflow:hidden}.pal .sw i{flex:1}.pal .on{border-color:var(--pri);box-shadow:0 0 0 1px var(--pri)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;color:var(--tx);min-height:100vh;padding-bottom:96px}
+.wrap{max-width:560px;margin:0 auto;padding:14px 16px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.hi small{color:var(--mu);font-size:.8rem;display:block}.hi b{font-size:1.25rem}
+.av{width:42px;height:42px;border-radius:50%;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:800;border:0;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:calc(22px*var(--rs,1));padding:16px;box-shadow:var(--sh);margin-bottom:14px}
+.hero{background:var(--grad);color:#fff;border:0;display:flex;gap:16px;align-items:center}
+.ring{position:relative;width:112px;height:112px;flex:none}
+.ring svg{transform:rotate(-90deg)}.ring .v{position:absolute;inset:0;display:grid;place-content:center;text-align:center;font-weight:800;font-size:1.45rem}
+.ring .v small{font-size:.65rem;font-weight:600;opacity:.8}
+.hero h3{font-size:.8rem;opacity:.85;font-weight:600}.hero p{font-size:.95rem;font-weight:700;margin:4px 0 10px;line-height:1.3}
+.chip{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:20px;padding:6px 12px;font-size:.75rem;font-weight:700;cursor:pointer}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.quick button{border:1.5px solid var(--bd);background:var(--card);color:var(--tx);border-radius:calc(16px*var(--rs,1));padding:12px 4px;font-weight:700;font-size:.8rem;cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:center}
+.quick button span{display:flex}.quick .ico{width:32px;height:32px}.quick button.on{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 16%,var(--card))}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.st{background:var(--card);border:1px solid var(--bd);border-bottom:3px solid var(--c2);border-radius:calc(16px*var(--rs,1));padding:10px 4px;text-align:center}
+.st b{display:block;font-size:1.3rem;color:var(--pri)}.st small{font-size:.68rem;color:var(--mu);font-weight:600}
+.cal-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal-h b{font-size:1.05rem;color:var(--pri)}.nb{width:38px;height:38px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:1rem;cursor:pointer}
+.g7{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.wd{text-align:center;font-size:.7rem;font-weight:700;color:var(--mu);padding:4px 0}
+.d{aspect-ratio:1/1.12;border-radius:calc(12px*var(--rs,1));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:.85rem;font-weight:700;border:1.5px solid transparent;cursor:pointer;background:var(--cell);min-width:0}
+.d i{font-style:normal;line-height:0}.ico{width:24px;height:24px;display:block;overflow:visible}.d.office,.quick [data-s=office],.lg-office{--ic:var(--of)}.d.wfh,.quick [data-s=wfh],.lg-wfh{--ic:var(--wf)}.d.leave,.quick [data-s=leave],.lg-leave{--ic:var(--lv)}.d.hol,.lg-hol{--ic:var(--c2)}.d .ico{width:28px;height:28px}.d.un,.lg-un{--ic:var(--un)}
+.d.e{background:none;cursor:default}.d.we{opacity:.4;cursor:default}
+.d.office{background:var(--ofb);border-color:var(--of)}.d.wfh{background:var(--wfb);border-color:var(--wf)}
+.d.leave{background:var(--lvb);border-color:var(--lv)}.d.hol{background:var(--hob);border-color:var(--ho);cursor:default}
+.d.un{background:var(--cell);border:1.5px dashed var(--un)}.d.auto{border-style:dashed}.d.today{box-shadow:0 0 0 2.5px var(--pri)}
+.leg span{display:flex;align-items:center;gap:4px}.leg .ico{width:20px;height:20px}.leg{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:.7rem;color:var(--mu);font-weight:600}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px))}
+nav button{background:none;border:0;color:var(--mu);font-size:.7rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 18px}
+nav button span{font-size:1.3rem}nav .on{color:var(--pri)}
+.ov{position:fixed;inset:0;background:rgba(10,12,25,.5);display:none;align-items:flex-end;z-index:50}.ov.on{display:flex}
+.sh{background:var(--card);width:100%;max-width:560px;margin:0 auto;border-radius:26px 26px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
+.hd{width:40px;height:4px;background:var(--bd);border-radius:4px;margin:0 auto 14px}
+.sh h3{text-align:center;margin-bottom:4px}.sh .sub{text-align:center;color:var(--mu);font-size:.8rem;margin-bottom:14px}
+.opt{width:100%;display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;border:1.5px solid var(--bd);background:var(--bg);color:var(--tx);font-size:1rem;font-weight:700;margin-bottom:8px;cursor:pointer;text-align:left}
+.opt.on{border-color:var(--pri)}.opt.del{color:color-mix(in srgb,var(--un) 80%,var(--tx))}
+label{display:block;font-size:.72rem;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px}
+input[type=text],input[type=number],input[type=date]{width:100%;height:48px;border-radius:14px;border:1.5px solid var(--bd);padding:0 14px;font-size:1rem;background:var(--bg);color:var(--tx);outline:none}
+input:focus{border-color:var(--pri)}input[type=range]{width:100%;accent-color:var(--pri)}
+.go{width:100%;height:50px;border:0;border-radius:15px;background:var(--grad);color:#fff;font-weight:800;font-size:1rem;margin-top:14px;cursor:pointer}
+.go.alt{background:var(--bg);color:var(--tx);border:1px solid var(--bd);margin-top:8px}
+.chips{display:flex;gap:8px}.chips button{flex:1;height:42px;border-radius:12px;border:1.5px solid var(--bd);background:var(--bg);color:var(--tx);font-weight:700;cursor:pointer}
+.chips .on{border-color:var(--pri);color:var(--pri)}
+#auth{min-height:80vh;display:grid;place-items:center}#auth .card{width:100%;max-width:380px;text-align:center;padding:30px 22px}
+#auth .logo{font-size:2.6rem}#auth h2{margin:8px 0 4px}#auth p{color:var(--mu);font-size:.85rem;margin-bottom:10px}
+#toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:.85rem;font-weight:700;opacity:0;pointer-events:none;transition:opacity .25s;z-index:99}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="ps" x="-25%" y="-25%" width="150%" height="160%"><feDropShadow dx="0" dy=".7" stdDeviation=".35" flood-color="#000" flood-opacity=".38"/></filter></defs>
+<symbol id="i-office" viewBox="0 0 24 24"><g filter="url(#ps)"><circle cx="19" cy="5.5" r="3" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/></g><g filter="url(#ps)"><ellipse cx="12" cy="20.5" rx="9" ry="2.4" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></g><g filter="url(#ps)"><rect x="13" y="8.5" width="7.5" height="12" rx="1" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/></g><g filter="url(#ps)"><rect x="4" y="3.5" width="10.5" height="17" rx="1.2" style="fill:var(--ic)"/></g><path style="fill:#fff" d="M6.2 6.6h1.9v1.9H6.2zM9.2 6.6h1.9v1.9H9.2zM12.2 6.6h1.9v1.9h-1.9zM6.2 9.8h1.9v1.9H6.2zM9.2 9.8h1.9v1.9H9.2zM12.2 9.8h1.9v1.9h-1.9zM6.2 13h1.9v1.9H6.2zM9.2 13h1.9v1.9H9.2zM12.2 13h1.9v1.9h-1.9z"/><path style="fill:color-mix(in srgb,var(--ic) 68%,#000)" d="M15.4 11.5h1.7v1.7h-1.7zM18 11.5h1.7v1.7H18zM15.4 15h1.7v1.7h-1.7zM18 15h1.7v1.7H18z"/><rect x="7.4" y="16.6" width="3.4" height="4" rx=".6" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></symbol>
+<symbol id="i-wfh" viewBox="0 0 24 24"><g filter="url(#ps)"><circle cx="5" cy="5.5" r="3" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/></g><g filter="url(#ps)"><ellipse cx="12" cy="20.5" rx="9" ry="2.4" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></g><g filter="url(#ps)"><rect x="15.8" y="4.8" width="2.8" height="5" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></g><g filter="url(#ps)"><rect x="5" y="11.5" width="14" height="9" rx="1" style="fill:var(--ic)"/></g><g filter="url(#ps)"><polygon points="12,4 22,12.5 2,12.5" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></g><polygon points="12,6.8 17.8,12 6.2,12" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/><rect x="10.3" y="15.2" width="3.4" height="5.4" rx=".7" style="fill:#fff"/><rect x="6.5" y="14.4" width="2.6" height="2.6" style="fill:#fff"/><rect x="14.9" y="14.4" width="2.6" height="2.6" style="fill:#fff"/><g filter="url(#ps)"><circle cx="21" cy="18.6" r="2" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/><circle cx="3.2" cy="18.8" r="1.7" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/></g></symbol>
+<symbol id="i-leave" viewBox="0 0 24 24"><g filter="url(#ps)"><circle cx="18.5" cy="5.5" r="3" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/></g><g filter="url(#ps)"><ellipse cx="12" cy="20.5" rx="8" ry="2.4" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></g><g filter="url(#ps)"><path d="M11.5 20C11.2 15 12.2 12 13.2 9" style="fill:none;stroke:color-mix(in srgb,var(--ic) 68%,#000);stroke-width:2;stroke-linecap:round"/></g><g filter="url(#ps)"><ellipse cx="8.8" cy="8.6" rx="5" ry="1.9" transform="rotate(-18 8.8 8.6)" style="fill:var(--ic)"/><ellipse cx="17.6" cy="8.6" rx="5" ry="1.9" transform="rotate(18 17.6 8.6)" style="fill:var(--ic)"/></g><g filter="url(#ps)"><ellipse cx="10.4" cy="5.6" rx="4.6" ry="1.7" transform="rotate(-52 10.4 5.6)" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/><ellipse cx="16" cy="5.6" rx="4.6" ry="1.7" transform="rotate(52 16 5.6)" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></g><circle cx="13.2" cy="9.2" r="1.2" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></symbol>
+<symbol id="i-hol" viewBox="0 0 24 24"><g filter="url(#ps)"><polygon points="12.4,3.4 14.8,9.2 21,9.6 16.2,13.6 17.7,19.7 12.4,16.4 7.1,19.7 8.6,13.6 3.8,9.6 10,9.2" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></g><g filter="url(#ps)"><polygon points="11.2,2.2 13.6,8 19.8,8.4 15,12.4 16.5,18.5 11.2,15.2 5.9,18.5 7.4,12.4 2.6,8.4 8.8,8" style="fill:var(--ic)"/></g><polygon points="11.2,7 12.1,9.5 14.8,9.7 12.7,11.4 13.4,14 11.2,12.6 9,14 9.7,11.4 7.6,9.7 10.3,9.5" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/><g filter="url(#ps)"><circle cx="20.5" cy="4" r="1.3" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/><rect x="1.8" y="3" width="2.2" height="2.2" rx=".4" transform="rotate(25 3 4)" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/><circle cx="3.6" cy="20.5" r="1.3" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/><rect x="19" y="19" width="2.4" height="2.4" rx=".4" transform="rotate(-20 20 20)" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/></g></symbol>
+<symbol id="i-un" viewBox="0 0 24 24"><g filter="url(#ps)"><rect x="3" y="4.5" width="17" height="16" rx="2.2" style="fill:color-mix(in srgb,var(--ic) 45%,#fff)"/></g><g filter="url(#ps)"><path d="M3 9.6V6.7A2.2 2.2 0 0 1 5.2 4.5h12.6A2.2 2.2 0 0 1 20 6.7v2.9z" style="fill:var(--ic)"/></g><g filter="url(#ps)"><rect x="7" y="2.4" width="2.2" height="4.2" rx="1.1" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/><rect x="13.8" y="2.4" width="2.2" height="4.2" rx="1.1" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></g><circle cx="11.2" cy="15" r="3.3" style="fill:none;stroke:var(--ic);stroke-width:1.4;stroke-dasharray:2.2 1.6"/><path d="M11.2 13.4v3.2M9.6 15h3.2" style="stroke:color-mix(in srgb,var(--ic) 68%,#000);stroke-width:1.3;stroke-linecap:round"/><g filter="url(#ps)"><g transform="rotate(38 18 17)"><rect x="16.8" y="9.5" width="2.4" height="9" rx=".5" style="fill:var(--ic)"/><rect x="16.8" y="9.5" width="2.4" height="2" rx=".5" style="fill:#fff"/><polygon points="16.8,18.5 19.2,18.5 18,21.6" style="fill:color-mix(in srgb,var(--ic) 68%,#000)"/></g></g></symbol></svg>
+<div class="wrap">
+<div id="auth" style="display:none"><div class="card">
+<div class="logo">🏢</div><h2>OfficeTrack</h2><p>Track office days and hit your compliance goal. Data stays on this device.</p>
+<label for="un" style="text-align:left">Your name</label><input type="text" id="un" placeholder="e.g. Alex Johnson" autocomplete="off">
+<button class="go" id="start">Start tracking →</button></div></div>
+
+<div id="app" style="display:none">
+<header><div class="hi"><small id="greet"></small><b id="uname"></b></div><button class="av" id="avatar"></button></header>
+<section class="card" id="setup" style="display:none"><b>Set up automatic attendance</b><p style="color:var(--mu);font-size:.85rem;margin:6px 0 0">Stand at your office once and tap below. After that, opening the app at the office marks Office, anywhere else marks WFH, and you only add Leave.</p><button class="go" id="setHere">Set office location now</button></section>
+
+<section class="card hero">
+<div class="ring"><svg width="112" height="112" viewBox="0 0 112 112"><circle cx="56" cy="56" r="48" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="10"/><circle id="arc" cx="56" cy="56" r="48" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-dasharray="301.6" stroke-dashoffset="301.6" style="transition:stroke-dashoffset .6s"/></svg><div class="v"><span id="pct">0%</span><small>of <span id="goalLbl">60</span>% goal</small></div></div>
+<div><h3 id="monthName"></h3><p id="insight">…</p><button class="chip" id="openSet">⚙️ Goal &amp; location</button></div>
+</section>
+
+<div class="quick" id="quick">
+<button data-s="office"><span><svg class="ico"><use href="#i-office"/></svg></span>Office</button><button data-s="wfh"><span><svg class="ico"><use href="#i-wfh"/></svg></span>WFH</button><button data-s="leave"><span><svg class="ico"><use href="#i-leave"/></svg></span>Leave</button></div>
+
+<div class="stats">
+<div class="st"><b id="mo">0</b><small>Office</small></div><div class="st"><b id="mw">0</b><small>WFH</small></div>
+<div class="st"><b id="ml">0</b><small>Leave</small></div><div class="st"><b id="mh">0</b><small>Holiday</small></div></div>
+
+<section class="card">
+<div class="cal-h"><button class="nb" id="prev">‹</button><b id="mlabel"></b><button class="nb" id="next">›</button></div>
+<div class="g7"><div class="wd">M</div><div class="wd">T</div><div class="wd">W</div><div class="wd">T</div><div class="wd">F</div><div class="wd">S</div><div class="wd">S</div></div>
+<div class="g7" id="grid" style="margin-top:4px"></div>
+<div class="leg"><span class="lg-office"><svg class="ico"><use href="#i-office"/></svg>Office</span><span class="lg-wfh"><svg class="ico"><use href="#i-wfh"/></svg>WFH</span><span class="lg-leave"><svg class="ico"><use href="#i-leave"/></svg>Leave</span><span class="lg-hol"><svg class="ico"><use href="#i-hol"/></svg>Holiday</span><span style="border:1.5px dashed var(--bd);border-radius:6px;padding:1px 6px">Dashed = auto-set</span></div>
+</section>
+<p id="gps" style="text-align:center;color:var(--mu);font-size:.78rem"></p><p style="text-align:center;color:var(--mu);font-size:.72rem;margin-top:4px">Location is checked while the app is open. Past working days with no office visit count as WFH. Add leave so it is not counted as WFH.</p>
+</div>
+</div>
+
+<nav id="nav" style="display:none"><button class="on"><span>📅</span>Tracker</button><button id="sync"><span>📍</span>Auto-detect</button><button id="theme"><span>🌓</span>Theme</button><button id="out"><span>👤</span>Switch</button></nav>
+
+<div class="ov" id="dayOv"><div class="sh"><div class="hd"></div><h3 id="dayT"></h3><div class="sub">How did you work this day?</div>
+<button class="opt" data-s="office">🏢 Office</button><button class="opt" data-s="wfh">🏠 Work from home</button><button class="opt" data-s="leave">🌴 On leave</button><button class="opt del" data-s="">🗑️ Clear entry</button>
+<label>Leave until (optional range)</label><input type="date" id="lto"><button class="go alt" id="lrange">Mark leave for this range</button></div></div>
+
+<div class="ov" id="setOv"><div class="sh"><div class="hd"></div><h3>Goal &amp; office location</h3><div class="sub">Counts Office + Leave + Holiday days toward your goal</div>
+<label>Color theme</label><div class="pal" id="pals"></div>
+<label>Custom colors</label><div class="cl"><div><input type="color" id="cc1"><small>Main</small></div><div><input type="color" id="cc2"><small>Accent</small></div><div><input type="color" id="cc3"><small>Soft</small></div></div>
+<label>Appearance</label><div class="chips" id="modes"><button data-m="auto">Auto</button><button data-m="light">Light</button><button data-m="dark">Dark</button></div>
+<label>Text size</label><div class="chips" id="fsz"><button data-f="14">Small</button><button data-f="16">Medium</button><button data-f="18">Large</button></div>
+<label>Corner roundness</label><input type="range" id="rnd" min="0" max="140" step="10" value="100">
+<button class="go alt" id="resetLook">Reset appearance</button>
+<label>Compliance goal: <span id="gv">60</span>%</label><div class="chips" id="presets"><button data-g="50">50%</button><button data-g="60">60%</button><button data-g="75">75%</button><button data-g="80">80%</button></div>
+<input type="range" id="gs" min="10" max="100" step="5" style="margin-top:10px">
+<label>Office location</label><button class="go alt" id="here" style="margin-top:0">📍 Use my current location</button>
+<div style="display:flex;gap:8px;margin-top:8px"><input type="number" step="any" id="lat" placeholder="Latitude"><input type="number" step="any" id="lng" placeholder="Longitude"></div>
+<label>Detection radius: <span id="rv">200</span>m</label><input type="range" id="rs" min="50" max="1000" step="50" value="200">
+<button class="go" id="save">Save</button></div></div>
+<div id="toast"></div>
+
+<script>
+const HOL={'2026-01-01':"New Year's Day",'2026-01-26':'Republic Day','2026-03-03':'Holi','2026-03-20':'Idul Fitr','2026-05-01':'Maharashtra Day','2026-09-14':'Ganesh Chaturthi','2026-10-02':'Gandhi Jayanti','2026-11-09':'Diwali','2026-11-10':'Diwali','2026-12-25':'Christmas'};
+const mem={};const ls={get(k){try{return localStorage.getItem(k)}catch(e){return mem[k]??null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}},del(k){try{localStorage.removeItem(k)}catch(e){delete mem[k]}}};
+const $=id=>document.getElementById(id);
+const fmt=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+let user=ls.get('ot_user'),view=new Date(),goal=60,sel=null;view.setDate(1);
+const slug=()=>user.toLowerCase().replace(/\s+/g,'_');
+const recs=()=>JSON.parse(ls.get('ot_d_'+slug())||'{}');
+const saveRecs=r=>ls.set('ot_d_'+slug(),JSON.stringify(r));
+const gpsCfg=()=>JSON.parse(ls.get('ot_g_'+slug())||'null');
+const todayStr=()=>fmt(new Date());
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+
+function boot(){
+ if(!user){$('auth').style.display='grid';$('app').style.display='none';$('nav').style.display='none';return}
+ $('auth').style.display='none';$('app').style.display='block';$('nav').style.display='flex';
+ goal=parseInt(ls.get('ot_goal_'+slug())||'60',10);
+ const h=new Date().getHours();$('greet').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+ $('uname').textContent=user;$('avatar').textContent=user[0].toUpperCase();
+ render();
+}
+$('start').onclick=()=>{const v=$('un').value.trim();if(v){user=v;ls.set('ot_user',v);boot()}};
+$('un').onkeydown=e=>{if(e.key==='Enter')$('start').click()};
+$('out').onclick=()=>{ls.del('ot_user');user=null;$('un').value='';boot()};
+$('avatar').onclick=$('out').onclick;
+$('theme').onclick=()=>{const r=document.documentElement,d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=d?'light':'dark';ls.set('ot_mode',r.dataset.theme)};
+
+const I=n=>`<svg class="ico" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+function render(){$('setup').style.display=gpsCfg()?'none':'block';
+ const y=view.getFullYear(),m=view.getMonth(),r=recs(),now=new Date();now.setHours(0,0,0,0);const ts=fmt(now);
+ $('mlabel').textContent=view.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+ $('monthName').textContent=view.toLocaleDateString('en-US',{month:'long'})+' progress';
+ $('goalLbl').textContent=goal;
+ const g=$('grid');g.innerHTML='';
+ let lead=(new Date(y,m,1).getDay()+6)%7;for(let i=0;i<lead;i++)g.insertAdjacentHTML('beforeend','<div class="d e"></div>');
+ let o=0,w=0,l=0,h=0,el=0,left=0;const n=new Date(y,m+1,0).getDate();
+ for(let day=1;day<=n;day++){
+  const dt=new Date(y,m,day),ds=fmt(dt),dow=dt.getDay(),we=dow===0||dow===6;let cls='d',ic='',click=true;
+  if(we){cls+=' we';ic='';click=false}
+  else if(HOL[ds]){cls+=' hol';ic=I('hol');h++;el++;click=false}
+  else{el++;const s=r[ds]?.status;if(r[ds]?.auto)cls+=' auto';
+   if(s==='office'){cls+=' office';ic=I('office');o++}else if(s==='wfh'){cls+=' wfh';ic=I('wfh');w++}else if(s==='leave'){cls+=' leave';ic=I('leave');l++}
+   else if(dt<now){cls+=' wfh auto';ic=I('wfh');w++}else if(ds===ts){cls+=' wfh auto';ic=I('wfh');left++}else left++}
+  if(ds===ts)cls+=' today';
+  const c=document.createElement('div');c.className=cls;c.innerHTML=`${day}<i>${ic}</i>`;if(HOL[ds])c.title=HOL[ds];
+  if(click)c.onclick=()=>openDay(ds);g.appendChild(c)}
+ $('mo').textContent=o;$('mw').textContent=w;$('ml').textContent=l;$('mh').textContent=h;
+ const ok=o+l+h,pct=el?ok/el*100:0,req=Math.ceil(goal/100*el),need=Math.max(0,req-ok);
+ $('pct').textContent=pct.toFixed(0)+'%';$('arc').style.strokeDashoffset=301.6*(1-Math.min(pct,100)/100);
+ let t;if(need===0)t='🎉 Goal achieved! You can relax.';
+ else if(need>left)t=`Goal out of reach by ${need-left} day(s) this month`;
+ else t=`Need ${need} more office day${need>1?'s':''} · ${left-need} spare day${left-need===1?'':'s'} to WFH`;
+ $('insight').textContent=t;
+ const td=r[ts]?.status;document.querySelectorAll('#quick button').forEach(b=>b.classList.toggle('on',b.dataset.s===td));
+}
+$('prev').onclick=()=>{view.setMonth(view.getMonth()-1);render()};
+$('next').onclick=()=>{view.setMonth(view.getMonth()+1);render()};
+
+function setStatus(ds,s,auto){const r=recs();if(s)r[ds]={status:s,...(auto?{auto:true}:{})};else delete r[ds];saveRecs(r);render()}
+document.querySelectorAll('#quick button').forEach(b=>b.onclick=()=>{const d=new Date();if([0,6].includes(d.getDay())||HOL[todayStr()]){toast('Today is a weekend or holiday');return}
+ setStatus(todayStr(),b.dataset.s);toast('Today marked: '+b.dataset.s)});
+function openDay(ds){sel=ds;const d=new Date(ds+'T00:00');$('dayT').textContent=d.toLocaleDateString('en-US',{weekday:'long',day:'numeric',month:'short'});
+ const cur=recs()[ds]?.status||'';document.querySelectorAll('#dayOv .opt').forEach(b=>b.classList.toggle('on',b.dataset.s===cur&&cur));$('dayOv').classList.add('on')}
+document.querySelectorAll('#dayOv .opt').forEach(b=>b.onclick=()=>{setStatus(sel,b.dataset.s||null);$('dayOv').classList.remove('on')});
+['dayOv','setOv'].forEach(i=>$(i).onclick=e=>{if(e.target.id===i)$(i).classList.remove('on')});
+
+function syncGoal(v){$('gs').value=v;$('gv').textContent=v;document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('on',+b.dataset.g===v))}
+$('openSet').onclick=()=>{syncGoal(goal);const c=gpsCfg();$('lat').value=c?.lat??'';$('lng').value=c?.lng??'';$('rs').value=c?.radius||200;$('rv').textContent=$('rs').value;$('setOv').classList.add('on')};
+$('gs').oninput=e=>syncGoal(+e.target.value);$('rs').oninput=e=>$('rv').textContent=e.target.value;
+document.querySelectorAll('#presets button').forEach(b=>b.onclick=()=>syncGoal(+b.dataset.g));
+$('here').onclick=()=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>{$('lat').value=p.coords.latitude.toFixed(6);$('lng').value=p.coords.longitude.toFixed(6);toast('Location captured')},()=>toast('Location unavailable')):toast('Not supported');
+$('save').onclick=()=>{goal=+$('gs').value;ls.set('ot_goal_'+slug(),goal);const la=parseFloat($('lat').value),ln=parseFloat($('lng').value);
+ if(!isNaN(la)&&!isNaN(ln))ls.set('ot_g_'+slug(),JSON.stringify({lat:la,lng:ln,radius:+$('rs').value}));
+ $('setOv').classList.remove('on');render();toast('Saved')};
+
+const PALS=[['indigo','Vandyke & Ochre','#143152','#D57E0B','#CCC8B0'],['teal','Teal & Vermilion','#03696F','#C53A14','#A1BAB6'],['cerulean','Cerulean & Ochre','#1B7599','#D5940C','#92AEC0'],['plum','Violet & Gold','#372365','#B7951D','#87AE9B']];
+const CUS_DEF={c1:'#143152',c2:'#D57E0B',c3:'#CCC8B0'},R=document.documentElement;
+const getCus=()=>{try{return JSON.parse(ls.get('ot_custom'))||CUS_DEF}catch(e){return CUS_DEF}};
+function setPal(p){R.dataset.p=p;ls.set('ot_pal',p);if(p==='custom'){const c=getCus();R.style.setProperty('--c1',c.c1);R.style.setProperty('--c2',c.c2);R.style.setProperty('--c3',c.c3)}else['--c1','--c2','--c3'].forEach(k=>R.style.removeProperty(k));
+ const cs=getComputedStyle(R);document.querySelector('meta[name=theme-color]').content=cs.getPropertyValue('--c1').trim();
+ ['cc1','cc2','cc3'].forEach((id,i)=>{const v=cs.getPropertyValue('--c'+(i+1)).trim();if(/^#[0-9a-f]{6}$/i.test(v))$(id).value=v});
+ document.querySelectorAll('#pals button').forEach(b=>b.classList.toggle('on',b.dataset.p===p))}
+function buildPals(){const c=getCus(),all=PALS.concat([['custom','Custom',c.c1,c.c2,c.c3]]);
+ $('pals').innerHTML=all.map(p=>`<button data-p="${p[0]}"><span class="sw"><i style="background:${p[2]}"></i><i style="background:${p[3]}"></i><i style="background:${p[4]}"></i></span>${p[1]}</button>`).join('');
+ document.querySelectorAll('#pals button').forEach(b=>b.onclick=()=>setPal(b.dataset.p));
+ document.querySelectorAll('#pals button').forEach(b=>b.classList.toggle('on',b.dataset.p===R.dataset.p))}
+['cc1','cc2','cc3'].forEach(id=>{$(id).oninput=()=>{ls.set('ot_custom',JSON.stringify({c1:$('cc1').value,c2:$('cc2').value,c3:$('cc3').value}));setPal('custom');buildPals()};
+ $(id).onchange=()=>{const n=parseInt($('cc1').value.slice(1),16);if((.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255>.6)toast('Main color is light, so white text may be hard to read')}});
+function setMode(m){if(m==='auto'){delete R.dataset.theme;ls.set('ot_mode','')}else{R.dataset.theme=m;ls.set('ot_mode',m)}markAll()}
+function setFs(f){R.style.fontSize=f+'px';ls.set('ot_fs',f)}
+function setRs(v){R.style.setProperty('--rs',v/100);ls.set('ot_rs',v)}
+function markAll(){const m=R.dataset.theme||'auto',f=parseInt(R.style.fontSize)||16;
+ document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+ document.querySelectorAll('#fsz button').forEach(b=>b.classList.toggle('on',+b.dataset.f===f));
+ $('rnd').value=ls.get('ot_rs')||100}
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+document.querySelectorAll('#fsz button').forEach(b=>b.onclick=()=>{setFs(b.dataset.f);markAll()});
+$('rnd').oninput=e=>setRs(+e.target.value);
+$('resetLook').onclick=()=>{['ot_custom','ot_rs','ot_fs','ot_mode'].forEach(k=>ls.del(k));R.style.fontSize='';R.style.removeProperty('--rs');delete R.dataset.theme;setPal('indigo');buildPals();markAll();toast('Appearance reset')};
+$('openSet').addEventListener('click',markAll);
+buildPals();setPal(ls.get('ot_pal')||'indigo');const md=ls.get('ot_mode');if(md)R.dataset.theme=md;if(ls.get('ot_fs'))setFs(ls.get('ot_fs'));if(ls.get('ot_rs'))setRs(+ls.get('ot_rs'));
+function dist(a,b,c,d){const R=6371e3,p=Math.PI/180,x=Math.sin((c-a)*p/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin((d-b)*p/2)**2;return 2*R*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
+function handlePos(p){const c=gpsCfg(),s=$('gps');if(!c)return;
+ const d=Math.round(dist(p.coords.latitude,p.coords.longitude,c.lat,c.lng)),inO=d<=c.radius,ts=todayStr(),dow=new Date().getDay(),r=recs(),cur=r[ts],where=(inO?'📍 At office':'🏠 Away from office')+` (${d}m)`;
+ if(dow===0||dow===6||HOL[ts]){s.textContent=where+' · no attendance needed today';return}
+ let note='';
+ if(cur&&!cur.auto)note=' · your manual entry was kept';
+ else if(inO){if(!cur||cur.status!=='office')setStatus(ts,'office',true);note=' · Office marked automatically'}
+ else if(!cur){setStatus(ts,'wfh',true);note=' · WFH marked automatically'}
+ else note=cur.status==='office'?' · Office already recorded today':' · WFH';
+ s.textContent=where+note}
+function detect(manual){const c=gpsCfg(),s=$('gps');
+ if(!c){s.textContent='Set your office location to enable automatic attendance';if(manual)$('setup').scrollIntoView({behavior:'smooth'});return}
+ if(!navigator.geolocation){s.textContent='Location not supported here';return}
+ s.textContent='Detecting location…';
+ navigator.geolocation.getCurrentPosition(handlePos,()=>{s.textContent='⚠️ Location blocked. Allow location access in your browser.'},{enableHighAccuracy:true,timeout:10000,maximumAge:30000})}
+let wid=null;function watch(){if(wid!==null||!gpsCfg()||!navigator.geolocation)return;wid=navigator.geolocation.watchPosition(handlePos,()=>{},{enableHighAccuracy:false,maximumAge:60000})}
+$('setHere').onclick=()=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>{ls.set('ot_g_'+slug(),JSON.stringify({lat:+p.coords.latitude.toFixed(6),lng:+p.coords.longitude.toFixed(6),radius:200}));toast('Office location saved');render();detect(false);watch()},()=>toast('Allow location access to continue')):toast('Location not supported');
+$('lrange').onclick=()=>{const t=$('lto').value;if(!t||t<sel){toast('Pick an end date');return}const r=recs();for(let d=new Date(sel+'T00:00');fmt(d)<=t;d.setDate(d.getDate()+1)){const k=fmt(d),w=d.getDay();if(w&&w!==6&&!HOL[k])r[k]={status:'leave'}}saveRecs(r);$('dayOv').classList.remove('on');$('lto').value='';render();toast('Leave added')};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&user)detect(false)});
+$('sync').onclick=()=>detect(true);
+boot();if(user){detect(false);watch()}
+</script>
+</body>
+</html>
